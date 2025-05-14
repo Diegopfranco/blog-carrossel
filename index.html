@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <title>Blog Asta - Carrossel</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Sora', sans-serif;
       margin: 0;
@@ -15,7 +19,6 @@
       display: flex;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      gap: 20px;
       padding-bottom: 16px;
     }
 
@@ -24,7 +27,8 @@
     }
 
     .carousel-item {
-      flex: 0 0 calc((100% - 60px) / 4); /* Ajuste de largura perfeito pra 4 cards com 3 gaps de 20px */
+      width: 25%;
+      min-width: 25%;
       scroll-snap-align: start;
       background: #f3f6f8;
       border-radius: 16px;
@@ -32,6 +36,11 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.06);
       display: flex;
       flex-direction: column;
+      margin-right: 20px;
+    }
+
+    .carousel-item:last-child {
+      margin-right: 0;
     }
 
     .carousel-item .thumb-wrapper {
@@ -105,11 +114,11 @@
     }
 
     @media (max-width: 1024px) {
-      .carousel-item { flex: 0 0 50%; }
+      .carousel-item { width: 50%; min-width: 50%; }
     }
 
     @media (max-width: 768px) {
-      .carousel-item { flex: 0 0 100%; }
+      .carousel-item { width: 100%; min-width: 100%; }
     }
   </style>
 </head>
@@ -117,7 +126,177 @@
 
 <div class="carousel" id="carousel"></div>
 
-<!-- PapaParse: CSV parser babadeiro -->
+<!-- PapaParse: CSV parser -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script>
+const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-Z0xzmZ-MuewcrtVcGBaJEv8jbWHjSgfy0zgxqTQ7qBrV0Rw7J1kZC617mk5crq5u9lCWtOXtLPp8/pub?output=csv";
+
+fetch(sheetUrl)
+  .then(res => res.text())
+  .then(csv => {
+    const parsed = Papa.parse(csv, { header: true }).data;
+    const carousel = document.getElementById("carousel");
+
+    parsed.forEach(row => {
+      const link = (row.link || '').trim();
+      const categoria = (row.categoria || '').trim();
+      const image = (row.image || '').trim();
+      const title = (row.title || '').trim();
+      const autor = (row.autor || '').trim();
+      const data = (row.data || '').trim();
+      const excerpt = (row.excerpt || '').trim();
+
+      if (!image || !link) return;
+
+      const item = document.createElement("div");
+      item.className = "carousel-item";
+      item.innerHTML = `
+        <div class="thumb-wrapper">
+          <img src="${image}" alt="Thumb do post">
+          <div class="categoria">${categoria}</div>
+        </div>
+        <div class="content">
+          <h3 class="title">${title}</h3>
+          <div class="meta">por ${autor} • ${data}</div>
+          <p class="excerpt">${excerpt}</p>
+        </div>
+        <a class="button" href="${link}" target="_blank">Ver no LinkedIn</a>
+      `;
+      carousel.appendChild(item);
+    });
+  });
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog Asta - Carrossel</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: white;
+    }
+
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 16px;
+    }
+
+    .carousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    .carousel-item {
+      width: 25%;
+      min-width: 25%;
+      scroll-snap-align: start;
+      background: #f3f6f8;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 12px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      margin-right: 20px;
+    }
+
+    .carousel-item:last-child {
+      margin-right: 0;
+    }
+
+    .carousel-item .thumb-wrapper {
+      position: relative;
+    }
+
+    .carousel-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .categoria {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #144660;
+      color: white;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .content {
+      padding: 16px;
+    }
+
+    .title {
+      font-size: 1rem;
+      font-weight: bold;
+      margin: 0 0 8px 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .meta {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 8px;
+    }
+
+    .excerpt {
+      font-size: 0.9rem;
+      color: #333;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .carousel-item a.button {
+      display: inline-block;
+      margin: 0 16px 16px 16px;
+      padding: 8px 12px;
+      text-align: center;
+      background: #144660;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .carousel-item a.button:hover {
+      background: #0d2e47;
+    }
+
+    @media (max-width: 1024px) {
+      .carousel-item { width: 50%; min-width: 50%; }
+    }
+
+    @media (max-width: 768px) {
+      .carousel-item { width: 100%; min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="carousel" id="carousel"></div>
+
+<!-- PapaParse: CSV parser -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-Z0xzmZ-MuewcrtVcGBaJEv8jbWHjSgfy0zgxqTQ7qBrV0Rw7J1kZC617mk5crq5u9lCWtOXtLPp8/pub?output=csv";
