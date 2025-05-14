@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Blog Asta - Carrossel</title>
+  <title>Carrossel do Blog</title>
   <style>
     body {
       font-family: 'Sora', sans-serif;
@@ -10,35 +10,76 @@
       padding: 40px;
       background: white;
     }
+
     .carousel {
       display: flex;
-      gap: 20px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      padding-bottom: 8px;
+      gap: 20px;
+      padding-bottom: 16px;
     }
+
     .carousel::-webkit-scrollbar {
       display: none;
     }
+
     .carousel-item {
       flex: 0 0 25%;
       scroll-snap-align: start;
+      background: #f3f6f8;
       border-radius: 16px;
       overflow: hidden;
-      background: #f3f6f8;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-      padding: 16px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
     }
+
+    .carousel-item .thumb-wrapper {
+      position: relative;
+    }
+
     .carousel-item img {
       width: 100%;
-      border-radius: 12px;
+      height: auto;
+      display: block;
     }
-    .carousel-item a {
-      display: inline-block;
-      margin-top: 12px;
-      text-decoration: none;
-      color: #144660;
+
+    .categoria {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #144660;
+      color: white;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
       font-weight: bold;
+    }
+
+    .carousel-item a {
+      display: block;
+      margin: 16px;
+      padding: 8px 12px;
+      text-align: center;
+      background: #144660;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .carousel-item a:hover {
+      background: #0d2e47;
+    }
+
+    @media (max-width: 1024px) {
+      .carousel-item { flex: 0 0 50%; }
+    }
+
+    @media (max-width: 768px) {
+      .carousel-item { flex: 0 0 100%; }
     }
   </style>
 </head>
@@ -47,25 +88,28 @@
 <div class="carousel" id="carousel"></div>
 
 <script>
-  const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-Z0xzmZ-MuewcrtVcGBaJEv8jbWHjSgfy0zgxqTQ7qBrV0Rw7J1kZC617mk5crq5u9lCWtOXtLPp8/pub?output=csv";
+const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-Z0xzmZ-MuewcrtVcGBaJEv8jbWHjSgfy0zgxqTQ7qBrV0Rw7J1kZC617mk5crq5u9lCWtOXtLPp8/pub?output=csv";
 
-  fetch(sheetUrl)
-    .then(response => response.text())
-    .then(data => {
-      const lines = data.trim().split("\n").slice(1); // remove cabeçalho
-      const carousel = document.getElementById("carousel");
+fetch(sheetUrl)
+  .then(response => response.text())
+  .then(data => {
+    const rows = data.trim().split("\n").slice(1); // remove cabeçalho
+    const carousel = document.getElementById("carousel");
 
-      lines.forEach(line => {
-        const [image, link] = line.split(",");
-        const item = document.createElement("div");
-        item.className = "carousel-item";
-        item.innerHTML = `
+    rows.forEach(row => {
+      const [link, categoria, image] = row.split(",");
+      const item = document.createElement("div");
+      item.className = "carousel-item";
+      item.innerHTML = `
+        <div class="thumb-wrapper">
           <img src="${image.trim()}" alt="Thumb do post">
-          <a href="${link.trim()}" target="_blank">Ver no LinkedIn</a>
-        `;
-        carousel.appendChild(item);
-      });
+          <div class="categoria">${categoria.trim()}</div>
+        </div>
+        <a href="${link.trim()}" target="_blank">Ver no LinkedIn</a>
+      `;
+      carousel.appendChild(item);
     });
+  });
 </script>
 
 </body>
