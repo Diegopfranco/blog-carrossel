@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Carrossel do Blog</title>
+  <title>Blog Asta - Carrossel</title>
   <style>
     body {
       font-family: 'Sora', sans-serif;
@@ -117,30 +117,31 @@
 
 <div class="carousel" id="carousel"></div>
 
+<!-- PapaParse for CSV parsing -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-Z0xzmZ-MuewcrtVcGBaJEv8jbWHjSgfy0zgxqTQ7qBrV0Rw7J1kZC617mk5crq5u9lCWtOXtLPp8/pub?output=csv";
 
 fetch(sheetUrl)
-  .then(response => response.text())
-  .then(data => {
-    const rows = data.trim().split("\n").slice(1); // remove cabeçalho
+  .then(res => res.text())
+  .then(csv => {
+    const parsed = Papa.parse(csv, { header: true }).data;
     const carousel = document.getElementById("carousel");
 
-    rows.forEach(row => {
-      const [link, categoria, image, title, autor, data, excerpt] = row.split(",");
+    parsed.forEach(row => {
       const item = document.createElement("div");
       item.className = "carousel-item";
       item.innerHTML = `
         <div class="thumb-wrapper">
-          <img src="${image.trim()}" alt="Thumb do post">
-          <div class="categoria">${categoria.trim()}</div>
+          <img src="${row.image}" alt="Thumb do post">
+          <div class="categoria">${row.categoria}</div>
         </div>
         <div class="content">
-          <h3 class="title">${title.trim()}</h3>
-          <div class="meta">por ${autor.trim()} • ${data.trim()}</div>
-          <p class="excerpt">${excerpt.trim()}</p>
+          <h3 class="title">${row.title}</h3>
+          <div class="meta">por ${row.autor} • ${row.data}</div>
+          <p class="excerpt">${row.excerpt}</p>
         </div>
-        <a class="button" href="${link.trim()}" target="_blank">Ver no LinkedIn</a>
+        <a class="button" href="${row.link}" target="_blank">Ver no LinkedIn</a>
       `;
       carousel.appendChild(item);
     });
