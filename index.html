@@ -117,7 +117,7 @@
 
 <div class="carousel" id="carousel"></div>
 
-<!-- PapaParse for CSV parsing -->
+<!-- PapaParse: parseador de CSV -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-Z0xzmZ-MuewcrtVcGBaJEv8jbWHjSgfy0zgxqTQ7qBrV0Rw7J1kZC617mk5crq5u9lCWtOXtLPp8/pub?output=csv";
@@ -129,19 +129,29 @@ fetch(sheetUrl)
     const carousel = document.getElementById("carousel");
 
     parsed.forEach(row => {
+      const link = (row.link || '').trim();
+      const categoria = (row.categoria || '').trim();
+      const image = (row.image || '').trim();
+      const title = (row.title || '').trim();
+      const autor = (row.autor || '').trim();
+      const data = (row.data || '').trim();
+      const excerpt = (row.excerpt || '').trim();
+
+      if (!image || !link) return; // ignora linhas incompletas
+
       const item = document.createElement("div");
       item.className = "carousel-item";
       item.innerHTML = `
         <div class="thumb-wrapper">
-          <img src="${row.image}" alt="Thumb do post">
-          <div class="categoria">${row.categoria}</div>
+          <img src="${image}" alt="Thumb do post">
+          <div class="categoria">${categoria}</div>
         </div>
         <div class="content">
-          <h3 class="title">${row.title}</h3>
-          <div class="meta">por ${row.autor} • ${row.data}</div>
-          <p class="excerpt">${row.excerpt}</p>
+          <h3 class="title">${title}</h3>
+          <div class="meta">por ${autor} • ${data}</div>
+          <p class="excerpt">${excerpt}</p>
         </div>
-        <a class="button" href="${row.link}" target="_blank">Ver no LinkedIn</a>
+        <a class="button" href="${link}" target="_blank">Ver no LinkedIn</a>
       `;
       carousel.appendChild(item);
     });
