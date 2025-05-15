@@ -41,13 +41,15 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.06);
       display: flex;
       flex-direction: column;
+      justify-content: flex-start;
     }
 
     .thumb-wrapper {
-      position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
       overflow: hidden;
+      position: relative;
+      flex-shrink: 0;
     }
 
     .thumb-wrapper img {
@@ -73,6 +75,9 @@
 
     .content {
       padding: 16px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .title {
@@ -152,7 +157,6 @@
   <button class="arrow right" id="nextBtn">&#10095;</button>
 </div>
 
-<!-- PapaParse: parser de CSV -->
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
 const sheetUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ-Z0xzmZ-MuewcrtVcGBaJEv8jbWHjSgfy0zgxqTQ7qBrV0Rw7J1kZC617mk5crq5u9lCWtOXtLPp8/pub?gid=0&single=true&output=csv";
@@ -195,7 +199,6 @@ fetch(sheetUrl)
     });
   });
 
-// Scroll com setas
 nextBtn.addEventListener('click', () => {
   carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
 });
